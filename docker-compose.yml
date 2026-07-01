@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=change-this-in-production-use-a-long-random-string
+      - DATABASE_URL=sqlite:///./elingo.db
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

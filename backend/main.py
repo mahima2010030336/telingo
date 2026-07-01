@@ -218,6 +218,7 @@ def create_word(
 
     word = models.Word(
         word=word_data.word,
+        transliteration=word_data.transliteration,
         submitted_by=current_user.id,
         is_published=False,
     )

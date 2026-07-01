@@ -23,6 +23,7 @@ class Word(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     word = Column(String(200), nullable=False, index=True)
+    transliteration = Column(String(200), nullable=True)
     submitted_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     likes = Column(Integer, default=0)
     dislikes = Column(Integer, default=0)

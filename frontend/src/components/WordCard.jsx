@@ -108,7 +108,7 @@ export default function WordCard({ word, onVoteWord, showAll = false, pending = 
           onClick={() => navigate(`/word/${word.id}`)}
           style={{ color: 'var(--orange)', fontSize: 20, fontWeight: 700, cursor: 'pointer' }}
         >
-          {word.word}
+          {word.transliteration || word.word}
         </h2>
         {pending && (
           <div style={{ textAlign: 'right' }}>

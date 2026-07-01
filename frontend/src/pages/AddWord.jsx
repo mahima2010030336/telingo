@@ -17,6 +17,7 @@ export default function AddWord({ addDefOnly = false }) {
 
   const [form, setForm] = useState({
     word: '',
+    transliteration: '',
     definition: '',
     usage: '',
     region: '',
@@ -47,6 +48,7 @@ export default function AddWord({ addDefOnly = false }) {
       } else {
         const res = await wordsAPI.create({
           word: form.word,
+          transliteration: form.transliteration || null,
           definition: form.definition,
           usage: form.usage || null,
           region: form.region || null,
@@ -99,13 +101,20 @@ export default function AddWord({ addDefOnly = false }) {
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {!isDefOnly && (
+        {!isDefOnly && (
+          <>
             <input
               placeholder="Enter the new word (Telugu or English)"
               value={form.word}
               onChange={e => setForm(f => ({ ...f, word: e.target.value }))}
             />
-          )}
+            <input
+              placeholder="Transliteration in English (e.g. Namaskaram)"
+              value={form.transliteration}
+              onChange={e => setForm(f => ({ ...f, transliteration: e.target.value }))}
+            />
+          </>
+        )}
 
           <textarea
             placeholder="Enter the definition of this word"

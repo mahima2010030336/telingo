@@ -39,6 +39,7 @@ class DefinitionCreate(BaseModel):
 
 class WordCreate(BaseModel):
     word: str
+    transliteration: Optional[str] = None
     definition: str
     usage: Optional[str] = None
     region: Optional[str] = None

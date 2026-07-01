@@ -109,7 +109,7 @@ export default function Details() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <button className="btn-icon" onClick={() => navigate(-1)} style={{ fontSize: 18, padding: '8px 12px' }}>←</button>
-              <h1 style={{ color: 'var(--orange)', fontSize: 26, fontWeight: 700 }}>{word.word}</h1>
+              <h1 style={{ color: 'var(--orange)', fontSize: 26, fontWeight: 700 }}>{word.transliteration || word.word}</h1>
             </div>
             <button className="btn btn-outline" onClick={() => user ? navigate(`/word/${id}/add-definition`) : navigate('/login')}>
               + New Definition

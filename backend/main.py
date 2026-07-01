@@ -8,7 +8,7 @@ from typing import Optional
 import models, schemas, auth
 from database import engine, get_db
 import pathlib
-
+import os
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="eLingo Telugu Dictionary API", version="1.0.0")
@@ -20,30 +20,48 @@ def auto_seed():
     from database import SessionLocal
     db = SessionLocal()
     try:
-        if db.query(models.Word).count() > 0:
+        if db.query(models.Word).count() > 0 and not os.getenv("RESEED"):
             return
+        # Clear existing data
+        db.query(models.Definition).delete()
+        db.query(models.Word).delete()
+        db.query(models.User).delete()
+        db.commit()
+        
         user = models.User(
             name="eLingo Admin", email="admin@elingo.app",
             password_hash=auth.get_password_hash("admin123"),
         )
         db.add(user); db.flush()
         sample = [
-            ("\u0c28\u0c2e\u0c38\u0c4d\u0c15\u0c3e\u0c30\u0c02", [
-                ("Traditional Telugu greeting meaning Hello or Greetings, used to show respect.",
-                 "\u0c28\u0c2e\u0c38\u0c4d\u0c15\u0c3e\u0c30\u0c02, \u0c2e\u0c40\u0c30\u0c41 \u0c0e\u0c32\u0c3e \u0c09\u0c28\u0c4d\u0c28\u0c3e\u0c30\u0c41? (Hello, how are you?)", "Andhra Pradesh"),
-                ("A respectful salutation derived from Sanskrit, used across Telugu-speaking regions.",
-                 "\u0c2a\u0c46\u0c26\u0c4d\u0c26\u0c32\u0c15\u0c41 \u0c28\u0c2e\u0c38\u0c4d\u0c15\u0c3e\u0c30\u0c02 \u0c1a\u0c47\u0c2f\u0c3e\u0c32\u0c3f.", "Telangana"),
+            ("నమస్కారం", "Namaskaram", [
+                ("Traditional Telugu greeting meaning Hello or Greetings, used to show respect.", "Namaskaram, meeru ela unnaru? (Hello, how are you?)", "Andhra Pradesh"),
+                ("A respectful salutation derived from Sanskrit, used across Telugu-speaking regions.", "Peddhalaku namaskaram cheyali. (We should greet elders with Namaskaram.)", "Telangana"),
             ]),
-            ("\u0c05\u0c2e\u0c4d\u0c2e", [("Mother. The most affectionate Telugu word for one\u2019s mother.", "\u0c05\u0c2e\u0c4d\u0c2e \u0c35\u0c02\u0c1f \u0c1a\u0c47\u0c38\u0c4d\u0c24\u0c4b\u0c02\u0c26\u0c3f. (Mother is cooking.)", "All regions")]),
-            ("\u0c28\u0c40\u0c33\u0c4d\u0c33\u0c41", [("Water. Essential liquid for life.", "\u0c28\u0c3e\u0c15\u0c41 \u0c28\u0c40\u0c33\u0c4d\u0c33\u0c41 \u0c15\u0c3e\u0c35\u0c3e\u0c32\u0c3f. (I need water.)", "All regions")]),
-            ("\u0c1a\u0c46\u0c1f\u0c4d\u0c1f\u0c41", [("Tree. A large woody plant with branches and leaves.", "\u0c06 \u0c1a\u0c46\u0c1f\u0c4d\u0c1f\u0c41 \u0c1a\u0c3e\u0c32\u0c3e \u0c2a\u0c46\u0c26\u0c4d\u0c26\u0c26\u0c3f. (That tree is very big.)", "All regions")]),
-            ("\u0c2a\u0c41\u0c35\u0c4d\u0c35\u0c41", [("Flower. The colorful bloom of a plant.", "\u0c08 \u0c2a\u0c41\u0c35\u0c4d\u0c35\u0c41 \u0c1a\u0c3e\u0c32\u0c3e \u0c05\u0c02\u0c26\u0c02\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f. (This flower is very beautiful.)", "All regions")]),
-            ("\u0c06\u0c15\u0c3e\u0c36\u0c02", [("Sky. The expanse above the earth.", "\u0c06\u0c15\u0c3e\u0c36\u0c02 \u0c28\u0c40\u0c32\u0c02\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f. (The sky is blue.)", "All regions")]),
-            ("\u0c38\u0c42\u0c30\u0c4d\u0c2f\u0c41\u0c21\u0c41", [("Sun. The star at the center of our solar system.", "\u0c38\u0c42\u0c30\u0c4d\u0c2f\u0c41\u0c21\u0c41 \u0c24\u0c42\u0c30\u0c4d\u0c2a\u0c41\u0c28 \u0c09\u0c26\u0c2f\u0c3f\u0c38\u0c4d\u0c24\u0c3e\u0c21\u0c41. (The sun rises in the east.)", "All regions")]),
-            ("\u0c2a\u0c41\u0c38\u0c4d\u0c24\u0c15\u0c02", [("Book. A written or printed work.", "\u0c28\u0c47\u0c28\u0c41 \u0c2a\u0c41\u0c38\u0c4d\u0c24\u0c15\u0c02 \u0c1a\u0c26\u0c41\u0c35\u0c41\u0c24\u0c41\u0c28\u0c4d\u0c28\u0c3e\u0c28\u0c41. (I am reading a book.)", "All regions")]),
+            ("అమ్మ", "Amma", [
+                ("Mother. The most affectionate Telugu word for one's mother.", "Amma vanta chestundi. (Mother is cooking.)", "All regions"),
+            ]),
+            ("నీళ్ళు", "Neellu", [
+                ("Water. Essential liquid for life.", "Naaku neellu kaavali. (I need water.)", "All regions"),
+            ]),
+            ("చెట్టు", "Chettu", [
+                ("Tree. A large woody plant with branches and leaves.", "Aa chettu chala peddadi. (That tree is very big.)", "All regions"),
+            ]),
+            ("పువ్వు", "Puvvu", [
+                ("Flower. The colorful bloom of a plant.", "Ee puvvu chala andanga undi. (This flower is very beautiful.)", "All regions"),
+            ]),
+            ("ఆకాశం", "Aakasham", [
+                ("Sky. The expanse above the earth.", "Aakasham neelanga undi. (The sky is blue.)", "All regions"),
+            ]),
+            ("సూర్యుడు", "Sooryudu", [
+                ("Sun. The star at the center of our solar system.", "Sooryudu toorpuna udayistadu. (The sun rises in the east.)", "All regions"),
+            ]),
+            ("పుస్తకం", "Pustakam", [
+                ("Book. A written or printed work.", "Nenu pustakam chaduvutunnanu. (I am reading a book.)", "All regions"),
+            ]),
         ]
-        for word_str, defs in sample:
-            word = models.Word(word=word_str, submitted_by=user.id, is_published=True, likes=25)
+        for word_str, translit, defs in sample:
+            word = models.Word(word=word_str, transliteration=translit, submitted_by=user.id, is_published=True, likes=25)
             db.add(word); db.flush()
             for defn, usage, region in defs:
                 db.add(models.Definition(

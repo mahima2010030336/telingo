@@ -39,7 +39,7 @@ export default function Sidebar({ activeLetter, onLetterClick }) {
           width: 36, height: 36, background: 'var(--orange)',
           borderRadius: 10, display: 'flex', alignItems: 'center',
           justifyContent: 'center', fontSize: 18, fontWeight: 800, color: '#fff'
-        }}>e</div>
+        }}>తె</div>
         <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}>Lingo</span>
       </div>
 
